@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>AlphaGo Coding Lab — VEX Playground</title>
+  <link rel="stylesheet" href="/static/style.css" />
+</head>
+<body>
+  <header>
+    <h1>AlphaGo Coding Lab</h1>
+    <p class="subtitle">让 VEX 机器人像 AlphaGo 一样, 自己学会比赛</p>
+  </header>
+
+  <main>
+    <section class="card">
+      <h2>1. 任务</h2>
+      <p>7 个球 散布 30×30 inch 场地, 每球位置有 ±3 inch 噪声。
+         机器人 从角落 (0,0) 出发, 35 秒内 收集球送到对角线 goal (28,28)。</p>
+      <p>传统 K-8 教法: 孩子硬编访问顺序 0→1→2→3→4→5→6。
+         AlphaGo 教法: 让 AI 自己跑上千次仿真, 悟出最优策略。</p>
+    </section>
+
+    <section class="card">
+      <h2>2. 开始训练</h2>
+      <div class="controls">
+        <label>世代数 <input type="number" id="generations" value="50" min="5" max="200" /></label>
+        <label>种群大小 <input type="number" id="pop_size" value="30" min="5" max="80" /></label>
+        <label>随机种子 <input type="number" id="seed" value="42" /></label>
+        <button id="run-btn" type="button">Self-Play Training</button>
+      </div>
+      <p id="status" class="status">点击按钮开始</p>
+    </section>
+
+    <section class="card hidden" id="results">
+      <h2>3. 对比结果</h2>
+      <div class="compare">
+        <div class="metric baseline">
+          <div class="label">Baseline (硬编)</div>
+          <div class="value"><span id="b-mean">—</span> / 7 球</div>
+          <div class="sub">用时 <span id="b-time">—</span> 秒</div>
+        </div>
+        <div class="vs">vs</div>
+        <div class="metric evolved">
+          <div class="label">AlphaGo 自学</div>
+          <div class="value"><span id="e-mean">—</span> / 7 球</div>
+          <div class="sub">用时 <span id="e-time">—</span> 秒</div>
+        </div>
+        <div class="metric headline">
+          <div class="label">提升</div>
+          <div class="value"><span id="delta-pct">—</span></div>
+          <div class="sub">用时 <span id="delta-time">—</span></div>
+        </div>
+      </div>
+      <h3>路径对比</h3>
+      <img id="traj-img" alt="trajectory" />
+      <h3>进化曲线</h3>
+      <img id="fitness-img" alt="fitness" />
+      <h3>自学出的策略</h3>
+      <pre id="policy-json"></pre>
+    </section>
+
+    <section class="card hidden" id="coach-section">
+      <h2>4. AlphaGo 教练 解说</h2>
+      <button id="coach-btn" type="button">让 AI 教练 用人话讲</button>
+      <p id="coach-status" class="status"></p>
+      <div id="coach-text" class="coach"></div>
+    </section>
+  </main>
+
+  <footer>
+    <p>Powered by AI Builders Space · MetaHarness × VEX · <a href="https://github.com/" target="_blank" rel="noopener">source</a></p>
+  </footer>
+
+  <script src="/static/app.js"></script>
+</body>
+</html>
