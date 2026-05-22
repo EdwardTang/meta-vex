@@ -62,8 +62,9 @@ class ExportRequest(BaseModel):
     baseline_mean: float
     evolved_mean: float
     evolved_time: float
+    baseline_time: float = 38.6
     generations: int = 50
-    fmt: str = Field("vexcode_py", description="vexcode_py or vexcode_blocks")
+    fmt: str = Field("vexcode_vr_py", description="vexcode_vr_py | vexcode_v5_py | vexcode_blocks")
 
 
 @app.get("/")
@@ -124,18 +125,32 @@ def run_export(req: ExportRequest):
         margin=tuple(req.margin),
         skip_thresh=req.skip_thresh,
     )
-    if req.fmt == "vexcode_py":
-        body = export.policy_to_vexcode_python(
+    if req.fmt in ("vexcode_vr_py", "vexcode_vr"):
+        body = export.policy_to_vexcode_vr(
             policy,
             baseline_mean=req.baseline_mean,
             evolved_mean=req.evolved_mean,
+            baseline_time=req.baseline_time,
             evolved_time=req.evolved_time,
             n_gen=req.generations,
         )
         return PlainTextResponse(
             body,
             headers={
-                "Content-Disposition": "attachment; filename=alphago_autonomous.py",
+                "Content-Disposition": "attachment; filename=alphago_vexcode_vr.py",
+                "Content-Type": "text/x-python",
+            },
+        )
+    elif req.fmt in ("vexcode_v5_py", "vexcode_py"):
+        body = export.policy_to_vexcode_v5(
+            policy,
+            baseline_mean=req.baseline_mean,
+            evolved_mean=req.evolved_mean,
+        )
+        return PlainTextResponse(
+            body,
+            headers={
+                "Content-Disposition": "attachment; filename=alphago_vexcode_v5.py",
                 "Content-Type": "text/x-python",
             },
         )

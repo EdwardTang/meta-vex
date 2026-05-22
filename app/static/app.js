@@ -79,6 +79,12 @@ async function runCoach() {
   }
 }
 
+const EXPORT_FILES = {
+  vexcode_vr_py: "alphago_vexcode_vr.py",
+  vexcode_v5_py: "alphago_vexcode_v5.py",
+  vexcode_blocks: "alphago_autonomous.xml",
+};
+
 async function downloadExport(fmt) {
   if (!lastResult) return;
   $("export-status").textContent = "生成中…";
@@ -92,6 +98,7 @@ async function downloadExport(fmt) {
         skip_thresh: lastResult.policy.skip_thresh,
         baseline_mean: lastResult.baseline_mean,
         evolved_mean: lastResult.evolved_mean,
+        baseline_time: lastResult.baseline_time,
         evolved_time: lastResult.evolved_time,
         generations: parseInt($("generations").value, 10) || 50,
         fmt,
@@ -102,12 +109,12 @@ async function downloadExport(fmt) {
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = fmt === "vexcode_py" ? "alphago_autonomous.py" : "alphago_autonomous.xml";
+    a.download = EXPORT_FILES[fmt] || "alphago_autonomous.txt";
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
-    $("export-status").textContent = `下载成功: ${a.download}`;
+    $("export-status").textContent = `下载: ${a.download}. 打开 vr.vex.com → V5RC Push Back → 粘贴.`;
   } catch (err) {
     $("export-status").textContent = `错误: ${err.message}`;
   }
@@ -115,5 +122,6 @@ async function downloadExport(fmt) {
 
 $("run-btn").addEventListener("click", runEvolve);
 $("coach-btn").addEventListener("click", runCoach);
-$("export-py").addEventListener("click", () => downloadExport("vexcode_py"));
+$("export-vr").addEventListener("click", () => downloadExport("vexcode_vr_py"));
+$("export-v5").addEventListener("click", () => downloadExport("vexcode_v5_py"));
 $("export-xml").addEventListener("click", () => downloadExport("vexcode_blocks"));
