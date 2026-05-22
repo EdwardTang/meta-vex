@@ -66,6 +66,25 @@
       <p id="coach-status" class="status"></p>
       <div id="coach-text" class="coach"></div>
     </section>
+
+    <section class="card hidden" id="export-section">
+      <h2>5. 导出到 VEXcode → 真比赛榜单</h2>
+      <p>把训练出的策略导出成 VEXcode V5 / IQ 可读的代码。 学员粘贴到 VEXcode IDE, 校准实物常量后, 就能上传到 <a href="https://hoc.vexrobotics.com/leaderboard" target="_blank" rel="noopener">VEX Push Back 全球 Skills 榜</a>。</p>
+      <div class="export-actions">
+        <button id="export-py" type="button">下载 VEXcode Python (.py)</button>
+        <button id="export-xml" type="button">下载 Blocks XML (.xml)</button>
+        <a class="leaderboard-link" href="https://hoc.vexrobotics.com/leaderboard" target="_blank" rel="noopener">→ 打开 VEX Push Back Skills 榜单</a>
+      </div>
+      <p id="export-status" class="status"></p>
+      <details class="export-help">
+        <summary>怎么用 (3 步)</summary>
+        <ol>
+          <li>下载 <code>.py</code>, 打开 VEXcode V5 / IQ 新建项目, 粘贴到 <code>autonomous()</code> 函数</li>
+          <li>调四个常量: <code>INCHES_PER_TILE</code>, <code>DRIVE_VELOCITY_PCT</code>, <code>TURN_VELOCITY_PCT</code>, <code>PICKUP_DURATION_MS</code> 对齐你机器人 + 场地</li>
+          <li>VEXcode VR / V5 Brain 跑, 进 hoc.vexrobotics.com 提交跑分</li>
+        </ol>
+      </details>
+    </section>
   </main>
 
   <footer>

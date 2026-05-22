@@ -148,6 +148,42 @@ pre {
   white-space: pre-wrap;
 }
 
+.export-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+  margin: 12px 0;
+}
+.leaderboard-link {
+  display: inline-block;
+  padding: 10px 14px;
+  border: 1px solid var(--good);
+  border-radius: 8px;
+  color: var(--good);
+  text-decoration: none;
+  font-size: 13px;
+  font-weight: 600;
+}
+.leaderboard-link:hover { background: rgba(74, 222, 128, 0.1); }
+.export-help {
+  margin-top: 12px;
+  padding: 8px 12px;
+  background: #0f172a;
+  border-radius: 6px;
+  font-size: 13px;
+  color: var(--muted);
+}
+.export-help summary { cursor: pointer; color: var(--accent); }
+.export-help ol { margin: 8px 0 4px 20px; padding: 0; }
+.export-help li { margin: 4px 0; }
+.export-help code {
+  background: rgba(56, 189, 248, 0.15);
+  padding: 1px 5px;
+  border-radius: 3px;
+  font-size: 12px;
+}
+
 footer {
   text-align: center;
   padding: 16px;

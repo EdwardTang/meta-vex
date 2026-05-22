@@ -7,11 +7,11 @@ from pathlib import Path
 from typing import Optional
 
 from fastapi import FastAPI, HTTPException
-from fastapi.responses import FileResponse, JSONResponse
+from fastapi.responses import FileResponse, JSONResponse, PlainTextResponse, Response
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
 
-from . import coach, simulation as sim, viz
+from . import coach, export, simulation as sim, viz
 
 
 app = FastAPI(title="AlphaGo Coding Lab — VEX Playground")
@@ -53,6 +53,17 @@ class CoachRequest(BaseModel):
 
 class CoachResponse(BaseModel):
     explanation: str
+
+
+class ExportRequest(BaseModel):
+    order: list[int]
+    margin: list[float]
+    skip_thresh: float
+    baseline_mean: float
+    evolved_mean: float
+    evolved_time: float
+    generations: int = 50
+    fmt: str = Field("vexcode_py", description="vexcode_py or vexcode_blocks")
 
 
 @app.get("/")
@@ -104,6 +115,43 @@ def run_evolve(req: EvolveRequest):
         fitness_png_b64=fit_png,
         elapsed_secs=time.time() - t0,
     )
+
+
+@app.post("/api/export")
+def run_export(req: ExportRequest):
+    policy = sim.Policy(
+        order=tuple(req.order),
+        margin=tuple(req.margin),
+        skip_thresh=req.skip_thresh,
+    )
+    if req.fmt == "vexcode_py":
+        body = export.policy_to_vexcode_python(
+            policy,
+            baseline_mean=req.baseline_mean,
+            evolved_mean=req.evolved_mean,
+            evolved_time=req.evolved_time,
+            n_gen=req.generations,
+        )
+        return PlainTextResponse(
+            body,
+            headers={
+                "Content-Disposition": "attachment; filename=alphago_autonomous.py",
+                "Content-Type": "text/x-python",
+            },
+        )
+    elif req.fmt == "vexcode_blocks":
+        body = export.policy_to_vexcode_blocks(
+            policy,
+            baseline_mean=req.baseline_mean,
+            evolved_mean=req.evolved_mean,
+        )
+        return Response(
+            body,
+            media_type="application/xml",
+            headers={"Content-Disposition": "attachment; filename=alphago_autonomous.xml"},
+        )
+    else:
+        raise HTTPException(400, f"unknown fmt: {req.fmt}")
 
 
 @app.post("/api/coach", response_model=CoachResponse)

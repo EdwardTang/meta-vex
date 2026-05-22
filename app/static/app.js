@@ -24,6 +24,7 @@ async function runEvolve() {
     $("status").textContent = `完成. 后端用时 ${data.elapsed_secs.toFixed(1)} 秒.`;
     $("results").classList.remove("hidden");
     $("coach-section").classList.remove("hidden");
+    $("export-section").classList.remove("hidden");
   } catch (err) {
     $("status").textContent = `错误: ${err.message}`;
   } finally {
@@ -78,5 +79,41 @@ async function runCoach() {
   }
 }
 
+async function downloadExport(fmt) {
+  if (!lastResult) return;
+  $("export-status").textContent = "生成中…";
+  try {
+    const resp = await fetch("/api/export", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        order: lastResult.policy.order,
+        margin: lastResult.policy.margin,
+        skip_thresh: lastResult.policy.skip_thresh,
+        baseline_mean: lastResult.baseline_mean,
+        evolved_mean: lastResult.evolved_mean,
+        evolved_time: lastResult.evolved_time,
+        generations: parseInt($("generations").value, 10) || 50,
+        fmt,
+      }),
+    });
+    if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+    const blob = await resp.blob();
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = fmt === "vexcode_py" ? "alphago_autonomous.py" : "alphago_autonomous.xml";
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    $("export-status").textContent = `下载成功: ${a.download}`;
+  } catch (err) {
+    $("export-status").textContent = `错误: ${err.message}`;
+  }
+}
+
 $("run-btn").addEventListener("click", runEvolve);
 $("coach-btn").addEventListener("click", runCoach);
+$("export-py").addEventListener("click", () => downloadExport("vexcode_py"));
+$("export-xml").addEventListener("click", () => downloadExport("vexcode_blocks"));
